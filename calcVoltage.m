@@ -48,7 +48,6 @@ function voltage = calcVoltage(currentInjection, Rh, Rv, Ri)
       resistances(j,nNodes) = prodResistances/Ri;
     endif
  
-
   endfor
   
   %Need to update the last two rows, for the current source/sink
@@ -67,9 +66,7 @@ function voltage = calcVoltage(currentInjection, Rh, Rv, Ri)
   currents = zeros(nNodes,1);
   currents(nNodes)   = -1*max(currentInjection(:));
   
-  
   voltage = resistances\currents;
-  
   voltage = reshape(voltage(1:nNodes-1), size(Rv,2), size(Rh,1))';
   
 endfunction
