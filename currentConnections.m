@@ -35,6 +35,17 @@ function ret = currentConnections(varargin)
           endfor
         endfor
       endfor
+    case 'rings'
+    %Each additional argument is of the form [x y r t I] where t is the thickness of the ring and r is the outer radius
+      for i = 1:yNodes
+        for j = 1:xNodes
+          for k = 4:nargin
+            if (((j-varargin{k}(1)/meshSize-1)^2 + (i-varargin{k}(2)/meshSize-1)^2 <= (varargin{k}(3)/meshSize)^2)&&((j-varargin{k}(1)/meshSize-1)^2 + (i-varargin{k}(2)/meshSize-1)^2 > ((varargin{k}(3)-varargin{k}(4))/meshSize)^2))
+              ret(i,j) = varargin{k}(5);
+            endif
+          endfor
+        endfor
+      endfor
     case 'csv'
       %Argument is the filename
       ret = csvread(varargin{4});
