@@ -1,14 +1,13 @@
-function vMatrix = calcVoltage(currentInjection, Rh, Rv, Ri)
+function resistances = resistanceMatrix(currentInjection, Rh, Rv, Ri)
   %currentInjection is a matrix where each node of the shunt is marked with a 1 or -1.
   %1 for current source, -1 for current sink
   %Rh is the matrix of horizontal resistances in the shunt grid
   %Rv is the matrix of vertical resistances in the shunt grid
   %Ri is the resistance of each connection to the current source/sink
   
-  warning("off");
-
   nNodes = size(Rh,1)*size(Rv,2)+1; %Number of nodes, plus one for the current source
   resistances = zeros(nNodes);      %A square matrix for resistance between each node
+  voltages = zeros(nNodes,1);       %A column vector for the node voltages
   
   for j = 1:nNodes-1;
     x = mod(j, size(Rv,2));  %x node within shunt resistor grid
@@ -51,10 +50,10 @@ function vMatrix = calcVoltage(currentInjection, Rh, Rv, Ri)
  
   endfor
   
-  %Need to update the last row, for the current source
+  %Need to update the last two rows, for the current source/sink
   resistances(nNodes,nNodes)  = -1*sum(currentInjection(:)>0)/Ri;
   
-  %Now for every connection to the current source, make the term for that node = 1/Ri
+  %Now for every connection to the current source/sink, make the term for that node = 1/Ri
   for (i=1:size(Rh,1))
     for (j=1:size(Rv,2))
       if (currentInjection(i,j)>0)
@@ -63,14 +62,6 @@ function vMatrix = calcVoltage(currentInjection, Rh, Rv, Ri)
     endfor
   endfor
   
-  %Generate the current column vector
-  currents = zeros(nNodes,1);
-  currents(nNodes)   = -1*max(currentInjection(:));
-  
-  vMatrix = inv(resistances)*currents;
-  Vin = vMatrix(nNodes);
-  vMatrix = reshape(vMatrix(1:nNodes-1), size(Rv,2), size(Rh,1))';
 
-  warning("on");
 
 endfunction
